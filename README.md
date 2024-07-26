@@ -87,3 +87,9 @@ if all are 1's then pass
 
 ![alt text](image-7.png)
 looks cool by color by call depth
+
+
+![alt text](image-8.png)
+
+create eraser
+create water    
