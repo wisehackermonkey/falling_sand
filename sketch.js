@@ -17,11 +17,11 @@
 
 let grid_current;
 let grid_buffer;
-const N = 200;
-const SCALE = 3;
+const N = 500;
+const SCALE = 1.6;
 const EMPTY = 0;
 const SAND = 1;
-let radius = 10	;
+let radius = 100	;
 
 function setup() {
   createCanvas(800, 800);
@@ -32,8 +32,8 @@ function setup() {
 //   grid_current[1][5] = SAND;
 //   frameRate(15);
   background(GRAY)
-  noSmooth()
-  noStroke()
+//   noSmooth()
+//   noStroke()
 }
 
 function draw() {
@@ -42,7 +42,9 @@ function draw() {
   draw_pixels(SCALE, grid_current);
   fill(255, 0, 0, 0.40 * 255);
 //   fill(255, 0, 0);
+if( radius > 0){
   circle(mouseX, mouseY, radius * SCALE*2);
+}
 }
 
 function create2DArray(rows, cols, initialValue) {
@@ -104,12 +106,12 @@ function keyPressed() {
 	  grid_current = create2DArray(N, N, EMPTY);
 	}
 	if (key === '-') {
-		if (radius -1 === 0) {
+		// if (radius -1 === 0) {
 			//draw a circle of size radius * scale factor make its opacaity 30 and red
 			
 
 	  radius--;
-		}
+		// }
 
 	} 
 	if (key === '=') {
@@ -209,21 +211,51 @@ function setSandAtPosition(row, col) {
 // 	endShape(CLOSE);
 //   }
 
-
+let noiseScale = 0.02;
+let noiseStrength = 0.5;
+let noiseVal = 0;
 function draw_pixels(scale, grid) {
 	let tested = Array.from({ length: grid.length }, () => Array(grid[0].length).fill(false));
-	const MAX_CALL_DEPTH = 100;
+	const MAX_CALL_DEPTH = 20;
   
+	// function box_test(rowStart, rowEnd, colStart, colEnd) {
+	//   for (let row = rowStart; row < rowEnd; row++) {
+	// 	for (let col = colStart; col < colEnd; col++) {
+	// 	  if (grid[row][col] === 0) {
+	// 		return false;
+	// 	  }
+	// 	}
+	//   }
+	//   return true;
+	// }
+//rewrite box_test to only check the top bottom left right edges of the box
+	// function box_test(rowStart, rowEnd, colStart, colEnd) {
+	// 	for (let row = rowStart; row < rowEnd; row++) {
+	// 		if (grid[row][colStart] === 0 || grid[row][colEnd - 1] === 0) {
+	// 			return false;
+	// 		}
+	// 	}
+	// 	for (let col = colStart; col < colEnd; col++) {
+	// 		if (grid[rowStart][col] === 0 || grid[rowEnd - 1][col] === 0) {
+	// 			return false;
+	// 		}
+	// 	}
+	// 	return true
+	// }
+	
+	//rewrite the box test to only check the top bottom left right corners of the box
 	function box_test(rowStart, rowEnd, colStart, colEnd) {
-	  for (let row = rowStart; row < rowEnd; row++) {
-		for (let col = colStart; col < colEnd; col++) {
-		  if (grid[row][col] === 0) {
+		if (grid[rowStart][colStart] === 0 || grid[rowStart][colEnd - 1] === 0) {
 			return false;
-		  }
 		}
-	  }
-	  return true;
+		if (grid[rowEnd - 1][colStart] === 0 || grid[rowEnd - 1][colEnd - 1] === 0) {
+			return false;
+		}
+		return true;
 	}
+
+
+
   
 	function mark_tested(rowStart, rowEnd, colStart, colEnd) {
 	  for (let row = rowStart; row < rowEnd; row++) {
@@ -235,7 +267,15 @@ function draw_pixels(scale, grid) {
   
 	function draw_shape(rowStart, rowEnd, colStart, colEnd) {
 		beginShape();
-	  vertex(colStart * scale, rowStart * scale);
+		//fill random color perlins noise, offset red blue green
+		noiseVal = noise(colStart * noiseScale, rowStart * noiseScale);
+		green = noiseVal*255;
+		blue = noiseVal*255;
+		red = noiseVal*255;
+		fill(red%255, green%255, blue%255, 255)
+		// fill(255 * noiseVal, 255 * noiseVal, 255 * noiseVal, 255)
+
+      vertex(colStart * scale, rowStart * scale);
 	  vertex(colEnd * scale, rowStart * scale);
 	  vertex(colEnd * scale, rowEnd * scale);
 	  vertex(colStart * scale, rowEnd * scale);

@@ -64,11 +64,15 @@ draw_pixels
 create a edge detection kernal if the sum of the kernal detects a edge add a vertext to beginshape
 if not dont do anything
 
-prompt v2
 
 ![alt text](image-5.png)
-dam this one came out looking really cool
+DUDE THIS LOOKS AWESOME
 but has error of vertex drawing order
+![alt text](image-6.png)
+
+fixed! was simple
+dam this one came out looking really cool
+prompt v2
 draw_pixels
 recusively do
 start by splitting the grid into 4 quadrents test each, keep sub dividing untill box test size is 1
