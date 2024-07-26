@@ -1,10 +1,32 @@
 # falling sand
 inspired by https://www.youtube.com/watch?v=ArcHpsTXhb0
 Another Falling Sand Game
+# [Demo! click here](https://editor.p5js.org/wisemonkey/sketches/d07oVs7Ws)
 
-npm  i -gp5-manager
+https://github.com/wisehackermonkey/falling_sand
+creator wisehackermonkey
+20240725
 
-p5 server
+
+
+found a cool recusive algrotim that speeds up drawing 100x*
+also looks cool to boot!
+
+#  CONTROLS
+# + = make bigger  (key is actually "=")
+#  - = make smaller 
+# SPACE = reset
+
+
+inspired by amazing video 
+Another Falling Sand Game
+by 
+TimidAutomaton 
+https://www.youtube.com/watch?v=ArcHpsTXhb0
+
+
+
+*idk real numbers are hard.
 
 http://localhost:5555/#/falling_sand
 ![alt text](image.png)
