@@ -133,18 +133,7 @@ function mousePressed() {
 	  setSandAtPosition(row, col);
 	}
   }
-//   function setSandAtPosition(row, col) {
-// 	const radius = 2;
-// 	for (let i = -radius; i <= radius; i++) {
-// 	  for (let j = -radius; j <= radius; j++) {
-// 		let newRow = row + i;
-// 		let newCol = col + j;
-// 		if (newRow >= 0 && newRow < N && newCol >= 0 && newCol < N) {
-// 		  grid_current[newRow][newCol] = SAND;
-// 		}
-// 	  }
-// 	}
-//   }
+ 
 function setSandAtPosition(row, col) {
     // radius = 3;
     for (let i = -radius; i <= radius; i++) {
@@ -158,36 +147,143 @@ function setSandAtPosition(row, col) {
         }
       }
     }
-}
-// function draw_pixels(scale, grid) {
-//   for (let row = 0; row < N; row++) {
-// 	// 	 if (grid_current[row].reduce((a, b) => a + b, 0) === 0) {
-// 	// 	continue;
-// 	//  }
-//     for (let col = 0; col < N; col++) {
-//       if (grid[row][col] === SAND) {
-//         fill(194*row+col%255, 178, 128); // Sandstone yellow
-//       } else{
-// 		fill(0);
-// 	  }
-//       square(col * scale, row * scale, scale);
-//     }
-//   }
-// }
+} 
 
 function draw_pixels(scale, grid) {
-	beginShape(QUADS);
-	for (let row = 0; row < N; row++) {
-	  for (let col = 0; col < N; col++) {
-		if (grid[row][col] === SAND) {
-		  fill(row, col, 128,"HSV"); // Sandstone yellow
-		  vertex(col * scale, row * scale);
-		vertex((col + 1) * scale, row * scale);
-		vertex((col + 1) * scale, (row + 1) * scale);
-		vertex(col * scale, (row + 1) * scale);
+	let kernelX = [
+	  [-1, 0, 1],
+	  [-2, 0, 2],
+	  [-1, 0, 1]
+	];
+  
+	let kernelY = [
+	  [-1, -2, -1],
+	  [0, 0, 0],
+	  [1, 2, 1]
+	];
+  
+	beginShape();
+	for (let row = 1; row < N - 1; row++) {
+	  for (let col = 1; col < N - 1; col++) {
+		let sumX = 0;
+		let sumY = 0;
+  
+		// Apply the kernels
+		for (let i = -1; i <= 1; i++) {
+		  for (let j = -1; j <= 1; j++) {
+			sumX += grid[row + i][col + j] * kernelX[i + 1][j + 1];
+			sumY += grid[row + i][col + j] * kernelY[i + 1][j + 1];
+		  }
 		}
-		
+  
+		let magnitude = sqrt(sumX * sumX + sumY * sumY);
+  
+		// If an edge is detected, add a vertex
+		if (magnitude > 0) {
+		  vertex(col * scale, row * scale);
+		  vertex((col + 1) * scale, row * scale);
+		  vertex((col + 1) * scale, (row + 1) * scale);
+		  vertex(col * scale, (row + 1) * scale);
+		}
 	  }
 	}
 	endShape(CLOSE);
   }
+
+
+
+
+
+
+
+
+
+
+// function draw_pixels(scale, grid) {
+// 	// Find contours of sand regions
+// 	let contours = findContours(grid);
+	
+// 	// Simplify and draw each contour
+// 	for (let contour of contours) {
+// 	  let simplifiedContour = simplifyContour(contour, 0.9); // Adjust epsilon as needed
+	  
+// 	  beginShape(QUADS);
+// 	  for (let point of simplifiedContour) {
+// 		let col = point.x;
+// 		let row = point.y;
+// 		// fill(row, col, 128, "HSV"); // Sandstone yellow
+// 		fill(255); // Sandstone yellow
+// 		vertex(col * scale, row * scale);
+// 	  }
+// 	  endShape(CLOSE);
+// 	}
+//   }
+  
+//   function findContours(grid) {
+// 	let contours = [];
+// 	let visited = Array(N).fill().map(() => Array(N).fill(false));
+	
+// 	for (let row = 0; row < N; row++) {
+// 	  for (let col = 0; col < N; col++) {
+// 		if (grid[row][col] === SAND && !visited[row][col]) {
+// 		  let contour = [];
+// 		  let pos = {x: col, y: row};
+// 		  do {
+// 			contour.push(pos);
+// 			visited[pos.y][pos.x] = true;
+// 			pos = findNextUnvisited(grid, visited, pos);
+// 		  } while (pos && (pos.x !== col || pos.y !== row));
+// 		  contours.push(contour);
+// 		}
+// 	  }
+// 	}
+// 	return contours;
+//   }
+  
+//   function findNextUnvisited(grid, visited, pos) {
+// 	const directions = [
+// 	  {dx: 0, dy: -1}, {dx: 1, dy: -1}, {dx: 1, dy: 0}, {dx: 1, dy: 1},
+// 	  {dx: 0, dy: 1}, {dx: -1, dy: 1}, {dx: -1, dy: 0}, {dx: -1, dy: -1}
+// 	];
+// 	for (let dir of directions) {
+// 	  let nx = pos.x + dir.dx;
+// 	  let ny = pos.y + dir.dy;
+// 	  if (nx >= 0 && nx < N && ny >= 0 && ny < N &&
+// 		  grid[ny][nx] === SAND && !visited[ny][nx]) {
+// 		return {x: nx, y: ny};
+// 	  }
+// 	}
+// 	return null;
+//   }
+  
+//   function simplifyContour(points, epsilon) {
+// 	if (points.length <= 2) return points;
+	
+// 	let maxDist = 0;
+// 	let index = 0;
+// 	let end = points.length - 1;
+	
+// 	for (let i = 1; i < end; i++) {
+// 	  let dist = pointLineDistance(points[i], points[0], points[end]);
+// 	  if (dist > maxDist) {
+// 		index = i;
+// 		maxDist = dist;
+// 	  }
+// 	}
+	
+// 	if (maxDist > epsilon) {
+// 	  let results1 = simplifyContour(points.slice(0, index + 1), epsilon);
+// 	  let results2 = simplifyContour(points.slice(index), epsilon);
+// 	  return [...results1.slice(0, -1), ...results2];
+// 	} else {
+// 	  return [points[0], points[end]];
+// 	}
+//   }
+  
+//   function pointLineDistance(point, lineStart, lineEnd) {
+// 	let dx = lineEnd.x - lineStart.x;
+// 	let dy = lineEnd.y - lineStart.y;
+// 	let numerator = Math.abs(dy * point.x - dx * point.y + lineEnd.x * lineStart.y - lineEnd.y * lineStart.x);
+// 	let denominator = Math.sqrt(dx * dx + dy * dy);
+// 	return numerator / denominator;
+//   }

@@ -58,3 +58,8 @@ funciton draw()
 set the result of updateGridState(scale factor, grid_buffer, grid_current) to current grid
 draw_pixels
 ```
+
+
+draw_pixels
+create a edge detection kernal if the sum of the kernal detects a edge add a vertext to beginshape
+if not dont do anything
