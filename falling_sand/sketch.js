@@ -17,7 +17,7 @@
 
 let grid_current;
 let grid_buffer;
-const N = 250;
+const N = 200;
 const SCALE = 3;
 const EMPTY = 0;
 const SAND = 1;
@@ -28,8 +28,8 @@ function setup() {
   grid_current = create2DArray(N, N, EMPTY);
   grid_buffer = create2DArray(N, N, EMPTY);
   // Initialize some sand particles for demonstration
-  grid_current[0][5] = SAND;
-  grid_current[1][5] = SAND;
+//   grid_current[0][5] = SAND;
+//   grid_current[1][5] = SAND;
 //   frameRate(15);
   background(GRAY)
   noSmooth()
@@ -148,47 +148,164 @@ function setSandAtPosition(row, col) {
       }
     }
 } 
+// function draw_pixels(scale, grid) {
+// 	let tested = Array.from({ length: grid.length }, () => Array(grid[0].length).fill(false));
+  
+// 	function box_test(row, col, size) {
+// 	  for (let i = 0; i < size; i++) {
+// 		for (let j = 0; j < size; j++) {
+// 		  if (row + i >= grid.length || col + j >= grid[0].length || grid[row + i][col + j] !== 1) {
+// 			return false;
+// 		  }
+// 		}
+// 	  }
+// 	  return true;
+// 	}
+  
+// 	function mark_tested(row, col, size) {
+// 	  for (let i = 0; i < size; i++) {
+// 		for (let j = 0; j < size; j++) {
+// 		  tested[row + i][col + j] = true;
+// 		}
+// 	  }
+// 	}
+  
+// 	function draw_shape(row, col, size) {
+// 	  vertex(col * scale, row * scale);
+// 	  vertex((col + size) * scale, row * scale);
+// 	  vertex((col + size) * scale, (row + size) * scale);
+// 	  vertex(col * scale, (row + size) * scale);
+// 	}
+  
+// 	function recursive_draw(rowStart, rowEnd, colStart, colEnd) {
+// 	  if (rowStart >= rowEnd || colStart >= colEnd) return;
+  
+// 	  let midRow = Math.floor((rowStart + rowEnd) / 2);
+// 	  let midCol = Math.floor((colStart + colEnd) / 2);
+  
+// 	  recursive_draw(rowStart, midRow, colStart, midCol);
+// 	  recursive_draw(rowStart, midRow, midCol, colEnd);
+// 	  recursive_draw(midRow, rowEnd, colStart, midCol);
+// 	  recursive_draw(midRow, rowEnd, midCol, colEnd);
+  
+// 	  for (let row = rowStart; row < rowEnd; row++) {
+// 		for (let col = colStart; col < colEnd; col++) {
+// 		  if (grid[row][col] === 1 && !tested[row][col]) {
+// 			let maxSize = 1;
+// 			while (box_test(row, col, maxSize)) {
+// 			  maxSize++;
+// 			}
+// 			maxSize--; // Revert to last passing size
+  
+// 			mark_tested(row, col, maxSize);
+// 			draw_shape(row, col, maxSize);
+// 		  }
+// 		}
+// 	  }
+// 	}
+  
+// 	beginShape();
+// 	recursive_draw(0, grid.length, 0, grid[0].length);
+// 	endShape(CLOSE);
+//   }
+
 
 function draw_pixels(scale, grid) {
-	let kernelX = [
-	  [-1, 0, 1],
-	  [-2, 0, 2],
-	  [-1, 0, 1]
-	];
+	let tested = Array.from({ length: grid.length }, () => Array(grid[0].length).fill(false));
+	const MAX_CALL_DEPTH = 100;
   
-	let kernelY = [
-	  [-1, -2, -1],
-	  [0, 0, 0],
-	  [1, 2, 1]
-	];
-  
-	beginShape();
-	for (let row = 1; row < N - 1; row++) {
-	  for (let col = 1; col < N - 1; col++) {
-		let sumX = 0;
-		let sumY = 0;
-  
-		// Apply the kernels
-		for (let i = -1; i <= 1; i++) {
-		  for (let j = -1; j <= 1; j++) {
-			sumX += grid[row + i][col + j] * kernelX[i + 1][j + 1];
-			sumY += grid[row + i][col + j] * kernelY[i + 1][j + 1];
+	function box_test(rowStart, rowEnd, colStart, colEnd) {
+	  for (let row = rowStart; row < rowEnd; row++) {
+		for (let col = colStart; col < colEnd; col++) {
+		  if (grid[row][col] === 0) {
+			return false;
 		  }
 		}
+	  }
+	  return true;
+	}
   
-		let magnitude = sqrt(sumX * sumX + sumY * sumY);
-  
-		// If an edge is detected, add a vertex
-		if (magnitude > 0) {
-		  vertex(col * scale, row * scale);
-		  vertex((col + 1) * scale, row * scale);
-		  vertex((col + 1) * scale, (row + 1) * scale);
-		  vertex(col * scale, (row + 1) * scale);
+	function mark_tested(rowStart, rowEnd, colStart, colEnd) {
+	  for (let row = rowStart; row < rowEnd; row++) {
+		for (let col = colStart; col < colEnd; col++) {
+		  tested[row][col] = true;
 		}
 	  }
 	}
-	endShape(CLOSE);
+  
+	function draw_shape(rowStart, rowEnd, colStart, colEnd) {
+		beginShape();
+	  vertex(colStart * scale, rowStart * scale);
+	  vertex(colEnd * scale, rowStart * scale);
+	  vertex(colEnd * scale, rowEnd * scale);
+	  vertex(colStart * scale, rowEnd * scale);
+	  endShape(CLOSE);
+
+	}
+  
+	function recursive_draw(rowStart, rowEnd, colStart, colEnd, depth) {
+	  if (depth > MAX_CALL_DEPTH || rowStart >= rowEnd || colStart >= colEnd) return;
+  
+	  if (box_test(rowStart, rowEnd, colStart, colEnd)) {
+		mark_tested(rowStart, rowEnd, colStart, colEnd);
+		draw_shape(rowStart, rowEnd, colStart, colEnd);
+	  } else if (rowEnd - rowStart > 1 || colEnd - colStart > 1) {
+		let midRow = Math.floor((rowStart + rowEnd) / 2);
+		let midCol = Math.floor((colStart + colEnd) / 2);
+  
+		recursive_draw(rowStart, midRow, colStart, midCol, depth + 1);
+		recursive_draw(rowStart, midRow, midCol, colEnd, depth + 1);
+		recursive_draw(midRow, rowEnd, colStart, midCol, depth + 1);
+		recursive_draw(midRow, rowEnd, midCol, colEnd, depth + 1);
+	  }
+	}
+  
+
+	recursive_draw(0, grid.length, 0, grid[0].length, 0);
   }
+
+
+
+// function draw_pixels(scale, grid) {
+// 	let kernelX = [
+// 	  [-1, 0, 1],
+// 	  [-2, 0, 2],
+// 	  [-1, 0, 1]
+// 	];
+  
+// 	let kernelY = [
+// 	  [-1, -2, -1],
+// 	  [0, 0, 0],
+// 	  [1, 2, 1]
+// 	];
+  
+// 	beginShape();
+// 	for (let row = 1; row < N - 1; row++) {
+// 	  for (let col = 1; col < N - 1; col++) {
+// 		let sumX = 0;
+// 		let sumY = 0;
+  
+// 		// Apply the kernels
+// 		for (let i = -1; i <= 1; i++) {
+// 		  for (let j = -1; j <= 1; j++) {
+// 			sumX += grid[row + i][col + j] * kernelX[i + 1][j + 1];
+// 			sumY += grid[row + i][col + j] * kernelY[i + 1][j + 1];
+// 		  }
+// 		}
+  
+// 		let magnitude = sqrt(sumX * sumX + sumY * sumY);
+  
+// 		// If an edge is detected, add a vertex
+// 		if (magnitude > 0) {
+// 		  vertex(col * scale, row * scale);
+// 		  vertex((col + 1) * scale, row * scale);
+// 		  vertex((col + 1) * scale, (row + 1) * scale);
+// 		  vertex(col * scale, (row + 1) * scale);
+// 		}
+// 	  }
+// 	}
+// 	endShape(CLOSE);
+//   }
 
 
 

@@ -59,7 +59,24 @@ set the result of updateGridState(scale factor, grid_buffer, grid_current) to cu
 draw_pixels
 ```
 
-
+prompt v1
 draw_pixels
 create a edge detection kernal if the sum of the kernal detects a edge add a vertext to beginshape
 if not dont do anything
+
+prompt v2
+
+![alt text](image-5.png)
+dam this one came out looking really cool
+but has error of vertex drawing order
+draw_pixels
+recusively do
+start by splitting the grid into 4 quadrents test each, keep sub dividing untill box test size is 1
+set call limit to 10
+
+box test is iterate through 
+if 0 is found then box test fails
+    recurvivly subdivide the box 
+if all are 1's then pass
+    add vertex's for all 4 corners of.
+
