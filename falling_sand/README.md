@@ -8,13 +8,11 @@ p5 server
 
 http://localhost:5555/#/falling_sand
 ![alt text](image.png)
-
+![alt text](image-4.png)
 first working verions!!!
 ![alt text](image-1.png)
 # first working piling behavor
-![
-    
-](image-3.png)
+![](image-3.png)
 # prompt
 ```python
 write a javscript p5.js sketch.
@@ -54,6 +52,8 @@ set fill color to sandstone yellow
 return 
 
 create a function that sets the current mouse position mapped to which current grid location its pointed to and sets it from EMPTY to full
+also set the surounding pixels in a radius of 5 to SAND
+
 funciton draw()
 set the result of updateGridState(scale factor, grid_buffer, grid_current) to current grid
 draw_pixels
