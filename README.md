@@ -84,3 +84,6 @@ if 0 is found then box test fails
 if all are 1's then pass
     add vertex's for all 4 corners of.
 
+
+![alt text](image-7.png)
+looks cool by color by call depth

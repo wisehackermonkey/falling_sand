@@ -6,13 +6,13 @@
 let grid_current;
 let grid_buffer;
 const N = 500;
-const SCALE = 1.6;
+const SCALE = 1;
 const EMPTY = 0;
 const SAND = 1;
 let radius = 100	;
-
+let MAX_CALL_DEPTH = 20;
 function setup() {
-  createCanvas(800, 800);
+  createCanvas(N, N);
   grid_current = create2DArray(N, N, EMPTY);
   grid_buffer = create2DArray(N, N, EMPTY);
   // Initialize some sand particles for demonstration
@@ -20,7 +20,7 @@ function setup() {
 //   grid_current[1][5] = SAND;
 //   frameRate(15);
   background(GRAY)
-//   noSmooth()
+  noSmooth()
 //   noStroke()
 }
 
@@ -122,23 +122,32 @@ function setSandAtPosition(row, col) {
 let noiseScale = 0.02;
 let noiseStrength = 0.5;
 let noiseVal = 0;
+let call_depth = 0
 function draw_pixels(scale, grid) {
 	let tested = Array.from({ length: grid.length }, () => Array(grid[0].length).fill(false));
-	const MAX_CALL_DEPTH = 20;
-   
+  
 	
-	//rewrite the box test to only check the top bottom left right corners of the box
+	//the box test to only check the top bottom left right corners of the box
+	// function box_test(rowStart, rowEnd, colStart, colEnd) {
+	// 	if (grid[rowStart][colStart] === 0 || grid[rowStart][colEnd - 1] === 0) {
+	// 		return false;
+	// 	}
+	// 	if (grid[rowEnd - 1][colStart] === 0 || grid[rowEnd - 1][colEnd - 1] === 0) {
+	// 		return false;
+	// 	}
+	// 	return true;
+	// }
+	//rewrite the tested box to test all its pixels and return false if any of them is empty
 	function box_test(rowStart, rowEnd, colStart, colEnd) {
-		if (grid[rowStart][colStart] === 0 || grid[rowStart][colEnd - 1] === 0) {
-			return false;
-		}
-		if (grid[rowEnd - 1][colStart] === 0 || grid[rowEnd - 1][colEnd - 1] === 0) {
-			return false;
+		for (let row = rowStart; row < rowEnd; row++) {
+		  for (let col = colStart; col < colEnd; col++) {
+			if (grid[row][col] === 0) {
+			  return false;
+			}
+		  }
 		}
 		return true;
-	}
-
-
+	  }
 
   
 	function mark_tested(rowStart, rowEnd, colStart, colEnd) {
@@ -151,13 +160,9 @@ function draw_pixels(scale, grid) {
   
 	function draw_shape(rowStart, rowEnd, colStart, colEnd) {
 		beginShape();
-		//fill random color perlins noise, offset red blue green
-		noiseVal = noise(colStart * noiseScale, rowStart * noiseScale);
-		green = noiseVal*255;
-		blue = noiseVal*255;
-		red = noiseVal*255;
-		fill(red%255, green%255, blue%255, 255)
-		// fill(255 * noiseVal, 255 * noiseVal, 255 * noiseVal, 255)
+		//fill random  color
+		// c = random(255)
+		fill(call_depth*40,0,0)//+100, c*1.5, c/2);
 
       vertex(colStart * scale, rowStart * scale);
 	  vertex(colEnd * scale, rowStart * scale);
@@ -169,7 +174,7 @@ function draw_pixels(scale, grid) {
   
 	function recursive_draw(rowStart, rowEnd, colStart, colEnd, depth) {
 	  if (depth > MAX_CALL_DEPTH || rowStart >= rowEnd || colStart >= colEnd) return;
-  
+	  call_depth = depth
 	  if (box_test(rowStart, rowEnd, colStart, colEnd)) {
 		mark_tested(rowStart, rowEnd, colStart, colEnd);
 		draw_shape(rowStart, rowEnd, colStart, colEnd);
