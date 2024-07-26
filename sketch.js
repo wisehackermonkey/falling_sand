@@ -1,5 +1,28 @@
 
+// https://github.com/wisehackermonkey/falling_sand
+//creator wisehackermonkey
+//20240725
 
+
+
+//found a cool recusive algrotim that speeds up drawing 100x*
+//also looks cool to boot!
+
+//CONTROLS
+// + = make bigger  (key is actually "=")
+// - = make smaller 
+// SPACE = reset
+
+
+//inspired by amazing video 
+//Another Falling Sand Game
+//by 
+// TimidAutomaton 
+//https://www.youtube.com/watch?v=ArcHpsTXhb0
+
+
+
+//*idk real numbers are hard.
  
 
 
