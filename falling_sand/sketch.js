@@ -1,17 +1,17 @@
 
 
 
-// function setup() {
-// 	createCanvas(windowWidth, windowHeight);
-// 	// put setup code here
-// 	background(0)
-// 	print("works")
-// }
+// // function setup() {
+// // 	createCanvas(windowWidth, windowHeight);
+// // 	// put setup code here
+// // 	background(0)
+// // 	print("works")
+// // }
 
-// function draw() {
-// 	// put drawing code here
-// 	//https://youtu.be/ArcHpsTXhb0?t=174
-// }
+// // function draw() {
+// // 	// put drawing code here
+// // 	//https://youtu.be/ArcHpsTXhb0?t=174
+// // }
 
 
 
@@ -28,8 +28,8 @@ function setup() {
   grid_buffer = create2DArray(N, N, EMPTY);
   // Initialize some sand particles for demonstration
   grid_current[0][5] = SAND;
-  grid_current[2][5] = SAND;
-  frameRate(3);
+  grid_current[1][5] = SAND;
+  frameRate(15);
   background(GRAY)
 }
 
@@ -49,25 +49,65 @@ function create2DArray(rows, cols, initialValue) {
   return arr;
 }
 
-function updateGridState(buffer, current) {
-  // Copy current grid to buffer
-  for (let i = 0; i < N; i++) {
+// function updateGridState(buffer, current) {
+//   // Copy current grid to buffer
+//   for (let i = 0; i < N; i++) {
+//     for (let j = 0; j < N; j++) {
+//       buffer[i][j] = current[i][j];
+//     }
+//   }
+
+//   for (let row = N - 2; row >= 0; row--) { // Start from second last row
+//     for (let col = 0; col < N; col++) {
+//       if (current[row][col] === SAND && current[row + 1][col] === EMPTY) {
+//         buffer[row][col] = EMPTY;
+//         buffer[row + 1][col] = SAND;
+//       }
+//     }
+//   }
+
+//   return buffer;
+// }
+
+function updateGridState(grid_buffer, grid_current) {
+	  for (let i = 0; i < N; i++) {
     for (let j = 0; j < N; j++) {
-      buffer[i][j] = current[i][j];
+		grid_buffer[i][j] = grid_current[i][j];
     }
   }
 
-  for (let row = N - 2; row >= 0; row--) { // Start from second last row
+	// for (let row = 0; row < N - 1; row++) {
+	//   for (let col = 0; col < N; col++) {
+	  for (let row = N - 2; row >= 0; row--) { // Start from second last row
     for (let col = 0; col < N; col++) {
-      if (current[row][col] === SAND && current[row + 1][col] === EMPTY) {
-        buffer[row][col] = EMPTY;
-        buffer[row + 1][col] = SAND;
-      }
-    }
+		if (grid_current[row][col] === SAND) {
+		  if (grid_current[row + 1][col] === EMPTY) {
+			grid_buffer[row][col] = EMPTY;
+			grid_buffer[row + 1][col] = SAND;
+		  } else if (col > 0 && grid_current[row + 1][col] === SAND && grid_current[row + 1][col - 1] === EMPTY) {
+			grid_buffer[row][col] = EMPTY;
+			grid_buffer[row + 1][col - 1] = SAND;
+		  } else if (col > 0 && grid_current[row - 1][col] === SAND && grid_current[row - 1][col + 1] === EMPTY) {
+			grid_buffer[row][col] = EMPTY;
+			grid_buffer[row - 1][col + 1] = SAND;
+		  } else {
+			grid_buffer[row][col] = grid_current[row][col];
+		  }
+		} else {
+		  grid_buffer[row][col] = grid_current[row][col];
+		}
+	  }
+	}
+	return grid_buffer;
   }
-
-  return buffer;
-}
+function mousePressed() {
+	let col = floor(mouseX / SCALE);
+	let row = floor(mouseY / SCALE);
+	if (col >= 0 && col < N && row >= 0 && row < N) {
+		grid_current[row][col] = SAND;
+	}
+	print("mouse pressed")
+  }
 
 function draw_pixels(scale, grid) {
   for (let row = 0; row < N; row++) {
@@ -81,3 +121,4 @@ function draw_pixels(scale, grid) {
     }
   }
 }
+

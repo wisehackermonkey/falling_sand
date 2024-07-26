@@ -1,9 +1,20 @@
+# falling sand
+inspired by https://www.youtube.com/watch?v=ArcHpsTXhb0
+Another Falling Sand Game
+
 npm  i -gp5-manager
 
 p5 server
 
 http://localhost:5555/#/falling_sand
 ![alt text](image.png)
+
+first working verions!!!
+![alt text](image-1.png)
+# first working piling behavor
+![
+    
+](image-3.png)
 # prompt
 ```python
 write a javscript p5.js sketch.
@@ -26,6 +37,10 @@ if grid[current row+1][current column] is equal to enum "empty"
     set grid_buffer [current row][current column] to 'empty'
     # move the sand pixel down 
     set grid_buffer [current_rowrow+1][current column] to "sand"
+if  cell bellow current is sand and grid to left & down is 'EMPTY'
+    set left and down = SAND
+    set current index to EMPTY
+
 
 
 returns buffer grid
